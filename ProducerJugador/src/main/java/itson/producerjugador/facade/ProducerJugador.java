@@ -4,6 +4,7 @@
  */
 package itson.producerjugador.facade;
 
+import itson.producerjugador.emitters.ConfigurarPartidaEmitter;
 import itson.producerjugador.emitters.InicializarJuegoEmitter;
 import itson.producerjugador.emitters.JugarTurnoEmitter;
 import itson.rummydtos.FichaDTO;
@@ -17,10 +18,12 @@ public class ProducerJugador implements IProducerJugador {
 
     private final JugarTurnoEmitter jugarTurnoEmitter;
     private final InicializarJuegoEmitter inicializarJuegoEmitter;
+    private final ConfigurarPartidaEmitter configurarPartidaEmitter;
 
-    public ProducerJugador(JugarTurnoEmitter jugarTurnoEmitter, InicializarJuegoEmitter inicializarJuegoEmitter, String jugadorId) {
+    public ProducerJugador(JugarTurnoEmitter jugarTurnoEmitter, InicializarJuegoEmitter inicializarJuegoEmitter, ConfigurarPartidaEmitter configurarPartidaEmitter, String jugadorId) {
         this.jugarTurnoEmitter = jugarTurnoEmitter;
         this.inicializarJuegoEmitter = inicializarJuegoEmitter;
+        this.configurarPartidaEmitter = configurarPartidaEmitter;
     }
 
     @Override
@@ -51,6 +54,11 @@ public class ProducerJugador implements IProducerJugador {
     @Override
     public void devolverFicha(String grupoId, String fichaId) {
         jugarTurnoEmitter.emitirFichaDevueltaEvent(grupoId, fichaId);
+    }
+
+    @Override
+    public void configurarPartida(int maxNumFichas, int cantidadComodines) {
+        configurarPartidaEmitter.emitirPartidaConfiguradaEvent(maxNumFichas, cantidadComodines);
     }
 
 }

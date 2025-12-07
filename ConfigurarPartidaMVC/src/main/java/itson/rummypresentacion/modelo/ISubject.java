@@ -9,5 +9,7 @@ package itson.rummypresentacion.modelo;
  * @author Dana Chavez
  */
 public interface ISubject {
-    
+    public void suscribir(IObserver observer);
+    public void notificar(IObserver observer);
+    public void notificarObservers();       
 }

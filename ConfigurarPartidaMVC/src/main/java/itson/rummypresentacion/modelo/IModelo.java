@@ -4,10 +4,13 @@
  */
 package itson.rummypresentacion.modelo;
 
+import itson.rummypresentacion.utils.TipoVista;
+
 /**
  *
  * @author Dana Chavez
  */
 public interface IModelo {
-    
+    TipoVista getVistaActual();
+    String getMensajeError();
 }

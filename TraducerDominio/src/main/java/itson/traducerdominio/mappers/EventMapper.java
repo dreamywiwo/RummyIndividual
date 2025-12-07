@@ -9,6 +9,7 @@ import itson.rummyeventos.acciones.FichaDevueltaEvent;
 import itson.rummyeventos.acciones.FichaTomadaEvent;
 import itson.rummyeventos.acciones.GrupoActualizadoEvent;
 import itson.rummyeventos.acciones.GrupoCreadoEvent;
+import itson.rummyeventos.acciones.PartidaConfiguradaEvent;
 import itson.rummyeventos.acciones.TerminoTurnoEvent;
 import itson.rummyeventos.base.EventBase;
 import itson.serializer.interfaces.ISerializer;
@@ -38,6 +39,7 @@ public class EventMapper {
         register("ficha.tomada", this::handleFichaTomada);
         register("termino.turno", this::handleTerminoTurno);
         register("ficha.devuelta", this::handleFichaDevuelta);
+        register("partida.configurada", this::handlePartidaConfigurada);
     }
     
     public void register(String eventType, BiConsumer<String, ISerializer> handler) {
@@ -103,4 +105,14 @@ public class EventMapper {
             e.printStackTrace();
         }
     }
+    
+    private void handlePartidaConfigurada(String rawPayload, ISerializer serializer){
+        try {
+            PartidaConfiguradaEvent event = serializer.deserialize(rawPayload, PartidaConfiguradaEvent.class);
+            dominio.configurarPartida(event.getMaxNumFichas(), event.getCantidadComodines());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
 }

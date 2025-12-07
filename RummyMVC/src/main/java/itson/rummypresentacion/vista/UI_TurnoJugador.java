@@ -243,7 +243,6 @@ public class UI_TurnoJugador extends javax.swing.JFrame implements IObserver {
         getContentPane().add(jPanelSopa, new org.netbeans.lib.awtextra.AbsoluteConstraints(510, 60, 120, 50));
 
         jButtonTerminarTurno.setIcon(new javax.swing.ImageIcon(getClass().getResource("/terminarButton_1.png"))); // NOI18N
-        jButtonTerminarTurno.setActionCommand("");
         jButtonTerminarTurno.setBorder(null);
         jButtonTerminarTurno.setBorderPainted(false);
         jButtonTerminarTurno.setContentAreaFilled(false);

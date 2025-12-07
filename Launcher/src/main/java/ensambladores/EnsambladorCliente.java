@@ -7,11 +7,12 @@ import claseReceptor.ColaReceptor;
 import claseReceptor.Receptor;
 import claseReceptor.SocketIN;
 import com.mycompany.conexioninterfaces.IDispatcher;
+import itson.producerjugador.emitters.ConfigurarPartidaEmitter;
 import itson.producerjugador.emitters.InicializarJuegoEmitter;
 import itson.producerjugador.emitters.JugarTurnoEmitter;
 import itson.producerjugador.facade.IProducerJugador;
 import itson.producerjugador.facade.ProducerJugador;
-import itson.rummydtos.JugadorDTO; // <--- IMPORTANTE
+import itson.rummydtos.JugadorDTO; 
 import itson.rummypresentacion.controlador.ControladorTurno;
 import itson.rummypresentacion.modelo.Modelo;
 import itson.rummypresentacion.vista.UI_TurnoJugador;
@@ -33,8 +34,9 @@ public class EnsambladorCliente {
         
         JugarTurnoEmitter emitterJugar = new JugarTurnoEmitter(jsonSerializer, dispatcher, ipBroker, puertoBroker);
         InicializarJuegoEmitter emitterInit = new InicializarJuegoEmitter(jsonSerializer, dispatcher, ipBroker, puertoBroker);
+        ConfigurarPartidaEmitter emitterConfigurar = new ConfigurarPartidaEmitter(jsonSerializer, dispatcher, ipBroker, puertoBroker);
         
-        IProducerJugador producer = new ProducerJugador(emitterJugar, emitterInit, miId);
+        IProducerJugador producer = new ProducerJugador(emitterJugar, emitterInit, emitterConfigurar, miId);
         
         Modelo modelo = new Modelo(producer);
         modelo.setJugadorLocal(miId);
@@ -64,7 +66,6 @@ public class EnsambladorCliente {
         
         System.out.println("Ensamblador: Cliente " + nombreJugador + " (" + miId + ") iniciado en " + miIp + ":" + miPuerto);
 
-        // 4. Registro Automático
         emitterInit.emitirRegistroJugadorEvent(miId, miIp, miPuerto); 
         System.out.println("Ensamblador: Solicitud de registro enviada automáticamente.");
         

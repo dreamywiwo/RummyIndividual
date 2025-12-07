@@ -27,4 +27,6 @@ public interface IDominio {
     public void iniciarPartida();
     
     public void devolverFichaAMano(String grupoId, String fichaId);
+
+    public void configurarPartida(int maxNumFichas, int cantidadComodines);
 }

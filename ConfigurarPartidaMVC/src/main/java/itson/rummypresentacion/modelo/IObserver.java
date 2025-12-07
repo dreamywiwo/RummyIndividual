@@ -9,5 +9,9 @@ package itson.rummypresentacion.modelo;
  * @author Dana Chavez
  */
 public interface IObserver {
-    
+    /**
+     * Se llama cuando el modelo cambia
+     * @param modelo Estado actual del modelo (solo lectura)
+     */
+    void update(IModelo modelo);   
 }

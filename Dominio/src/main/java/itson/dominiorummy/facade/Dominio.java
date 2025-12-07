@@ -6,6 +6,8 @@ import itson.dominiorummy.entidades.Grupo;
 import itson.dominiorummy.entidades.GrupoNumero;
 import itson.dominiorummy.entidades.GrupoSecuencia;
 import itson.dominiorummy.entidades.Jugador;
+import itson.dominiorummy.entidades.Partida;
+import itson.dominiorummy.entidades.Partida.EstadoPartida;
 import itson.dominiorummy.entidades.Sopa;
 import itson.dominiorummy.entidades.Tablero;
 import itson.dominiorummy.entidades.Turno;
@@ -23,13 +25,14 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 public class Dominio implements IDominio {
-
+    
     private final Tablero tablero;
     private final IProducerDominio producer;
     private final Turno turno;
     private final Sopa sopa;
     private final List<Ficha> fichas;
     private final Map<String, Jugador> jugadores;
+    private Partida partida;
 
     // --- VARIABLES PARA EL SNAPSHOT ---
     private Tablero tableroBackup;
@@ -46,6 +49,49 @@ public class Dominio implements IDominio {
         this.sopa = sopa;
     }
 
+    // ----------------------- CASO DE USO CONFIGURAR PARTIDA -------------------------------
+    @Override
+    public void configurarPartida(int maxNumFichas, int cantidadComodines) {
+        if (validarExistenciaPartida()) {
+            producer.mostrarError("Servidor", "Ya existe una partida en curso o configurada.");
+            return;
+        }
+
+        if (!validarParametrosConfiguracion(maxNumFichas, cantidadComodines)) {
+            producer.mostrarError("Servidor", "Parámetros inválidos: Verifique fichas (min 2) y comodines.");
+            return;
+        }
+
+        try {
+            this.partida = new Partida();
+            this.partida.configurar(maxNumFichas, cantidadComodines);
+            this.partida.marcarDisponible();
+
+            // CONFIRMACIÓN (Opcional, para avisar a la UI que cambie de pantalla)
+            // producer.partidaConfiguradaExitosamente(); 
+            System.out.println("[DOMINIO] Partida creada y en estado: " + this.partida.getEstado());
+
+        } catch (Exception e) {
+            this.partida = null; 
+            producer.mostrarError("Servidor", "Error interno al crear la partida: " + e.getMessage());
+        }
+    }
+
+    private boolean validarExistenciaPartida() {
+        return this.partida != null && this.partida.getEstado() != EstadoPartida.TERMINADA;
+    }
+
+    private boolean validarParametrosConfiguracion(int fichas, int comodines) {
+        if (fichas < 10 || fichas > 13) {
+            return false; 
+        }
+        if (comodines < 2 || comodines > 8) {
+            return false;
+        }
+        return true;
+    }
+
+    // ----------------------- CASO DE USO EJERCER TURNO -----------------------------
     // INICIAR PARTIDA
     @Override
     public void iniciarPartida() {
@@ -381,14 +427,16 @@ public class Dominio implements IDominio {
             producer.mostrarError(jugadorId, "Ocurrió un error inesperado.");
         }
     }
-    
+
     // DEVOLVER FICHA A MANO 
     @Override
     public void devolverFichaAMano(String grupoId, String fichaId) {
         Jugador jugador = turno.getJugadorActual();
         String jugadorId = jugador.getId();
 
-        if (jugador == null) return;
+        if (jugador == null) {
+            return;
+        }
 
         boolean eraMia = manoJugadorBackup.stream()
                 .anyMatch(f -> f.getId().equals(fichaId));
@@ -411,10 +459,10 @@ public class Dominio implements IDominio {
             producer.actualizarTablero(TableroMapper.toDTO(tablero));
             producer.actualizarManoJugador(jugadorId, FichaMapper.toDTO(jugador.getMano().getFichas()));
             producer.enviarCantidadFichasPublico(jugadorId, jugador.getMano().getFichas().size());
-            
+
         } else {
-             producer.mostrarError(jugadorId, "La ficha ya no se encuentra en ese grupo.");
-             producer.actualizarTablero(TableroMapper.toDTO(tablero));
+            producer.mostrarError(jugadorId, "La ficha ya no se encuentra en ese grupo.");
+            producer.actualizarTablero(TableroMapper.toDTO(tablero));
         }
     }
 }
