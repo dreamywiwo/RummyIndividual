@@ -23,6 +23,7 @@ public class PartidaConfiguradaEvent extends EventBase {
     }
 
     public PartidaConfiguradaEvent(int maxNumFichas, int cantidadComodines) {
+        super(TOPIC, EVENT_TYPE);
         this.maxNumFichas = maxNumFichas;
         this.cantidadComodines = cantidadComodines;
     }

@@ -9,7 +9,7 @@ import itson.rummyeventos.actualizaciones.SopaActualizadaEvent;
 import itson.rummyeventos.actualizaciones.TableroActualizadoEvent;
 import itson.rummyeventos.actualizaciones.TurnoTerminadoEvent;
 import itson.rummyeventos.base.EventBase;
-import itson.rummypresentacion.modelo.IListener;
+import itson.rummylistener.interfaces.IGameGlobalListener;
 import itson.serializer.interfaces.ISerializer;
 import java.util.HashMap;
 import java.util.Map;
@@ -18,7 +18,7 @@ import java.util.function.BiConsumer;
 public class EventMapper {
 
     private final ISerializer serializer;
-    private IListener listener;
+    private IGameGlobalListener listener;
 
     private String miJugadorId;
 
@@ -38,7 +38,7 @@ public class EventMapper {
 
     }
 
-    public void setListener(IListener listener) {
+    public void setListener(IGameGlobalListener listener) {
         this.listener = listener;
     }
 
