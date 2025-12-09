@@ -1,4 +1,5 @@
 itson\producerjugador\emitters\InicializarJuegoEmitter.class
+itson\producerjugador\emitters\BaseEmitter.class
 itson\producerjugador\emitters\JugarTurnoEmitter.class
 itson\producerjugador\emitters\ConfigurarPartidaEmitter.class
 itson\producerjugador\facade\IProducerJugador.class

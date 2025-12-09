@@ -2,7 +2,7 @@ package itson.traducerjugador.mappers;
 
 import itson.rummyeventos.actualizaciones.CantidadFichasPublicoEvent;
 import itson.rummyeventos.actualizaciones.ErrorEvent;
-import itson.rummyeventos.actualizaciones.HighlightInvalidGroupEvent;
+import itson.rummyeventos.actualizaciones.InvalidGroupEvent;
 import itson.rummyeventos.actualizaciones.JuegoTerminadoEvent;
 import itson.rummyeventos.actualizaciones.ManoActualizadaEvent;
 import itson.rummyeventos.actualizaciones.SopaActualizadaEvent;
@@ -35,6 +35,7 @@ public class EventMapper {
         register("juego.terminado", this::handleJuegoTerminado);
         register("grupo.invalido", this::handleHighlightInvalidGroup);
         register("fichas.jugador.cantidad", this::handleCantidadFichas);
+        register("partida.creada", this::handlePartidaCreadaExitosamente);
 
     }
 
@@ -142,8 +143,8 @@ public class EventMapper {
     
     private void handleHighlightInvalidGroup(String rawPayload, ISerializer serializer) {
         try {
-            HighlightInvalidGroupEvent event =
-                serializer.deserialize(rawPayload, HighlightInvalidGroupEvent.class);
+            InvalidGroupEvent event =
+                serializer.deserialize(rawPayload, InvalidGroupEvent.class);
 
 
             if (!event.getJugadorId().equals(event.getJugadorId())) {
@@ -167,5 +168,15 @@ public class EventMapper {
                 listener.actualizarFichasOponente(event.getJugadorId(), event.getSize());
             }
         } catch (Exception e) { e.printStackTrace(); }
+    }
+    
+    private void handlePartidaCreadaExitosamente(String rawPayload, ISerializer serializer){
+        try {
+            if (listener != null) {
+                listener.recibirConfirmacionPartida();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

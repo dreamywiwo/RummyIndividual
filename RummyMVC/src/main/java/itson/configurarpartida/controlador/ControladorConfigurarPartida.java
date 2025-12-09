@@ -20,7 +20,7 @@ public class ControladorConfigurarPartida {
     public ControladorConfigurarPartida(ModeloConfiguracion modelo) {
         this.modelo = modelo;
     }
-    
+
     public void setSiguienteControlador(ControladorTurno siguienteControlador) {
         this.siguienteControlador = siguienteControlador;
     }
@@ -35,16 +35,25 @@ public class ControladorConfigurarPartida {
     }
 
     // Acción de Negocio 
-    public void confirmarConfiguracion(int maxNumFichas, int cantidadComodines){
-        modelo.enviarConfiguracionPartida(maxNumFichas, cantidadComodines);
-        
+    public void confirmarConfiguracion(int max, int comodines) {
+        modelo.resetEstado(); 
+        modelo.enviarConfiguracionPartida(max, comodines);
+    }
+
+    public void navegarAlJuego() {
         if (siguienteControlador != null) {
-            System.out.println("[CtrlConfig] Cambiando a vista de juego...");
-            
-            // Ocultar configuración
+            modelo.resetEstado();
             modelo.cambiarVista(null); 
-            
-            // Iniciar juego
+            siguienteControlador.iniciarJuego(); 
+        }
+    }
+
+    public void unirseAPartida() {
+        System.out.println("[CtrlConfig] Uniéndose a partida existente...");
+
+        if (siguienteControlador != null) {
+            modelo.cambiarVista(null);
+
             siguienteControlador.iniciarJuego();
         }
     }

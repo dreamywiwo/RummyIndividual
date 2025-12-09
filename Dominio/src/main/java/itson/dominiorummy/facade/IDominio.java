@@ -29,4 +29,6 @@ public interface IDominio {
     public void devolverFichaAMano(String grupoId, String fichaId);
 
     public void configurarPartida(int maxNumFichas, int cantidadComodines);
+    
+    public void procesarSolicitudEstado(String jugadorId);
 }

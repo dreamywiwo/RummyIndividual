@@ -20,25 +20,27 @@ import itson.configurarpartida.modelo.IObserverConfiguracion;
  * @author Dana Chavez
  */
 public class UI_ConfigurarPartida extends javax.swing.JFrame implements IObserverConfiguracion {
-    
+
     private ControladorConfigurarPartida controlador;
     private String ultimoMensajeError = null;
+    private boolean navegando = false;
 
     private final Font FUENTE_NUMEROS = new Font("Segoe UI", Font.BOLD, 36);
-    private final Color COLOR_NUMEROS = new Color(255, 221, 154); 
-    
+    private final Color COLOR_NUMEROS = new Color(255, 221, 154);
+
     /**
      * Creates new form ConfigurarPartida
      */
     public UI_ConfigurarPartida(ControladorConfigurarPartida controlador) {
         this.controlador = controlador;
         initComponents();
-        personalizarSliders(); 
+        personalizarSliders();
         setLocationRelativeTo(null);
     }
 
     /**
-     * Configura manualmente los sliders generados por NetBeans para que se vean bonitos.
+     * Configura manualmente los sliders generados por NetBeans para que se vean
+     * bonitos.
      */
     private void personalizarSliders() {
         configurarEstiloSlider(jSliderRangoFichas, 10, 13, 12);
@@ -50,9 +52,9 @@ public class UI_ConfigurarPartida extends javax.swing.JFrame implements IObserve
         slider.setMinimum(min);
         slider.setMaximum(max);
         slider.setValue(valInicial);
-        
+
         slider.setUI(new EstiloSliderRummy(slider));
-        
+
         slider.setOpaque(false);
         slider.setMajorTickSpacing(1);
         slider.setPaintTicks(false);
@@ -80,7 +82,7 @@ public class UI_ConfigurarPartida extends javax.swing.JFrame implements IObserve
 
         jSliderComodines = new javax.swing.JSlider();
         jSliderRangoFichas = new javax.swing.JSlider();
-        jButton1 = new javax.swing.JButton();
+        jButtonSiguiente = new javax.swing.JButton();
         jButtonRegresar = new javax.swing.JButton();
         jLabelFondo = new javax.swing.JLabel();
 
@@ -90,22 +92,22 @@ public class UI_ConfigurarPartida extends javax.swing.JFrame implements IObserve
         getContentPane().add(jSliderComodines, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 480, 630, -1));
         getContentPane().add(jSliderRangoFichas, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 310, 630, -1));
 
-        jButton1.setBackground(new java.awt.Color(194, 218, 233));
-        jButton1.setForeground(new java.awt.Color(74, 68, 89));
-        jButton1.setText("SIGUIENTE");
-        jButton1.setActionCommand("jButtonSiguiente");
-        jButton1.setBorder(null);
-        jButton1.setBorderPainted(false);
-        jButton1.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        jButton1.setMaximumSize(new java.awt.Dimension(242, 55));
-        jButton1.setMinimumSize(new java.awt.Dimension(242, 55));
-        jButton1.setPreferredSize(new java.awt.Dimension(242, 55));
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        jButtonSiguiente.setBackground(new java.awt.Color(194, 218, 233));
+        jButtonSiguiente.setForeground(new java.awt.Color(74, 68, 89));
+        jButtonSiguiente.setText("SIGUIENTE");
+        jButtonSiguiente.setActionCommand("jButtonSiguiente");
+        jButtonSiguiente.setBorder(null);
+        jButtonSiguiente.setBorderPainted(false);
+        jButtonSiguiente.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jButtonSiguiente.setMaximumSize(new java.awt.Dimension(242, 55));
+        jButtonSiguiente.setMinimumSize(new java.awt.Dimension(242, 55));
+        jButtonSiguiente.setPreferredSize(new java.awt.Dimension(242, 55));
+        jButtonSiguiente.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                jButtonSiguienteActionPerformed(evt);
             }
         });
-        getContentPane().add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(650, 630, -1, -1));
+        getContentPane().add(jButtonSiguiente, new org.netbeans.lib.awtextra.AbsoluteConstraints(650, 630, -1, -1));
 
         jButtonRegresar.setBackground(new java.awt.Color(194, 218, 233));
         jButtonRegresar.setForeground(new java.awt.Color(74, 68, 89));
@@ -129,14 +131,14 @@ public class UI_ConfigurarPartida extends javax.swing.JFrame implements IObserve
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void jButtonSiguienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSiguienteActionPerformed
         if (controlador != null) {
             Integer fichas = Integer.valueOf(jSliderRangoFichas.getValue());
             Integer comodines = Integer.valueOf(jSliderComodines.getValue());
-            
+
             controlador.confirmarConfiguracion(fichas, comodines);
         }
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }//GEN-LAST:event_jButtonSiguienteActionPerformed
 
     private void jButtonRegresarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonRegresarActionPerformed
         if (controlador != null) {
@@ -144,16 +146,29 @@ public class UI_ConfigurarPartida extends javax.swing.JFrame implements IObserve
         }
     }//GEN-LAST:event_jButtonRegresarActionPerformed
 
-
     @Override
     public void update(IModeloConfiguracion modelo) {
         SwingUtilities.invokeLater(() -> {
+            if (navegando) {
+                return;
+            }
+
             if (modelo.getVistaActual() == TipoVista.CONFIGURAR_PARTIDA) {
                 this.setVisible(true);
             } else {
                 this.setVisible(false);
             }
-            
+
+            if (modelo.isConfiguracionExitosa()) {
+                navegando = true; 
+
+                this.setVisible(false);
+                this.dispose();
+
+                controlador.navegarAlJuego();
+                return;
+            }
+
             String mensajeError = modelo.getMensajeError();
             if (mensajeError != null
                     && !mensajeError.isBlank()
@@ -172,8 +187,8 @@ public class UI_ConfigurarPartida extends javax.swing.JFrame implements IObserve
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
     private javax.swing.JButton jButtonRegresar;
+    private javax.swing.JButton jButtonSiguiente;
     private javax.swing.JLabel jLabelFondo;
     private javax.swing.JSlider jSliderComodines;
     private javax.swing.JSlider jSliderRangoFichas;

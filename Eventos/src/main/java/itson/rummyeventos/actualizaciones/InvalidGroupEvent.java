@@ -2,7 +2,7 @@ package itson.rummyeventos.actualizaciones;
 
 import itson.rummyeventos.base.EventBase;
 
-public class HighlightInvalidGroupEvent extends EventBase {
+public class InvalidGroupEvent extends EventBase {
 
     public static final String TOPIC = "actualizaciones.estado";
     public static final String EVENT_TYPE = "grupo.invalido";
@@ -10,11 +10,11 @@ public class HighlightInvalidGroupEvent extends EventBase {
     private String jugadorId;
     private String grupoId;
 
-    public HighlightInvalidGroupEvent() {
+    public InvalidGroupEvent() {
         super();
     }
 
-    public HighlightInvalidGroupEvent(String jugadorId, String grupoId) {
+    public InvalidGroupEvent(String jugadorId, String grupoId) {
         super(TOPIC, EVENT_TYPE);
         this.jugadorId = jugadorId;
         this.grupoId = grupoId;

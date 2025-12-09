@@ -47,7 +47,7 @@ public class ModeloEjercerTurno implements IModeloEjercerTurno, ISubject, ITurno
     private String grupoInvalidoId;
     private Map<String, Integer> fichasOponentes = new HashMap<>();
 
-    //tendra al producer que se llamara para crear cada evento
+    // tendra al producer que se llamara para crear cada evento
     public ModeloEjercerTurno(IProducerJugador producer) {
         this.producer = producer;
         this.observers = new ArrayList<>();
@@ -78,6 +78,11 @@ public class ModeloEjercerTurno implements IModeloEjercerTurno, ISubject, ITurno
 
     public void devolverFicha(String grupoId, String fichaId) {
         producer.devolverFicha(grupoId, fichaId);
+    }
+    
+    
+    public void solicitarSincronizacion() {
+        producer.solicitarEstadoJuego(this.idJugadorLocal);
     }
 
     // Implementacion de IModelo
@@ -267,5 +272,6 @@ public class ModeloEjercerTurno implements IModeloEjercerTurno, ISubject, ITurno
         fichasOponentes.put(jugadorId, size);
         notificarObservers();
     }
+
 
 }

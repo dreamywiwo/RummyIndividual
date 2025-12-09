@@ -71,4 +71,10 @@ public class ListenerProxy implements IGameGlobalListener {
     public void actualizarFichasOponente(String jugadorId, int cantidad) {
         if (turnoListener != null) turnoListener.actualizarFichasOponente(jugadorId, cantidad);
     }
+    
+    @Override
+    public void recibirConfirmacionPartida() {
+        if (configListener != null) configListener.recibirConfirmacionPartida();
+    }
+    
 }

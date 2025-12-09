@@ -22,6 +22,7 @@ public class ModeloConfiguracion implements IModeloConfiguracion, ISubjectConfig
 
     private TipoVista vistaActual = TipoVista.MENU_PRINCIPAL;
     private String mensajeError;
+    private boolean configuracionExitosa = false;
 
     public ModeloConfiguracion(IProducerJugador producer) {
         this.producer = producer;
@@ -62,6 +63,11 @@ public class ModeloConfiguracion implements IModeloConfiguracion, ISubjectConfig
     public String getMensajeError() {
         return mensajeError;
     }
+    
+    @Override
+    public boolean isConfiguracionExitosa() {
+        return configuracionExitosa;
+    }
 
     // OBSERVER
     @Override
@@ -88,5 +94,17 @@ public class ModeloConfiguracion implements IModeloConfiguracion, ISubjectConfig
     public void recibirError(String mensaje) {
         this.mensajeError = mensaje;
         notificarObservers();
+    }
+
+    @Override
+    public void recibirConfirmacionPartida() {
+        this.configuracionExitosa = true;
+        notificarObservers(); 
+    }
+    
+    // Resetear por si acaso
+    public void resetEstado() {
+        this.configuracionExitosa = false;
+        this.mensajeError = null;
     }
 }

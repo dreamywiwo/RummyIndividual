@@ -37,13 +37,15 @@ public class SocketIN {
                 server = new ServerSocket(puertoEscucha);
                 System.out.println("Servidor escuchando en puerto " + puertoEscucha);
 
-                while (!server.isClosed()) {
+                while (server != null && !server.isClosed()) {
                     Socket clienteSocket = server.accept();
                     pool.submit(new ClienteHandler(clienteSocket, colaReceptor));
                 }
             } catch (IOException e) {
-                if (!server.isClosed()) {
+                if (server != null && !server.isClosed()) {
                     System.err.println("Error en el ServerSocket - " + e.getMessage());
+                } else {
+                    System.err.println("El SocketIN se detuvo o no pudo iniciar en puerto " + puertoEscucha + ": " + e.getMessage());
                 }
             }
         }).start();
@@ -74,22 +76,30 @@ public class SocketIN {
 
         @Override
         public void run() {
-            String ip = socket.getInetAddress().getHostAddress();
-            int port = socket.getPort();
-            System.out.println("Conexión recibida de " + ip + ":" + port);
+            String ip = "Desconocida";
+            int port = 0;
 
-            try (BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
-                String json;
-                while ((json = in.readLine()) != null) {
-                    System.out.println("JSON recibido '" + json + "'");
-                    colaReceptor.recibir(json, port, ip);
+            try {
+                ip = socket.getInetAddress().getHostAddress();
+                port = socket.getPort();
+                System.out.println("Conexión recibida de " + ip + ":" + port);
+
+                try (BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
+                    String json;
+                    while ((json = in.readLine()) != null) {
+                        System.out.println("JSON recibido '" + json + "'");
+                        colaReceptor.recibir(json, port, ip);
+                    }
                 }
             } catch (IOException e) {
                 System.err.println("Error de lectura - " + e.getMessage());
             } finally {
                 try {
-                    socket.close();
+                    if (socket != null && !socket.isClosed()) {
+                        socket.close();
+                    }
                 } catch (IOException e) {
+                    // Ignorar error al cerrar
                 }
                 System.out.println("Conexión cerrada con " + ip);
             }

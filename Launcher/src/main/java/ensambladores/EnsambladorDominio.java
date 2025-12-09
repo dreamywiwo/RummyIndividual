@@ -46,7 +46,7 @@ public class EnsambladorDominio {
 
         InicializarJuegoEmitter initEmitter = new InicializarJuegoEmitter(jsonSerializer, dispatcher, ipBroker, puertoBroker);
 
-        IProducerDominio producer = new ProducerDominio(estadoEmitter, initEmitter); 
+        IProducerDominio producer = new ProducerDominio(jsonSerializer, dispatcher, ipBroker,puertoBroker); 
 
         // 2. INICIALIZACIÓN DE LÓGICA DE JUEGO
         List<Ficha> mazoCompleto = generarFichasRummy();
@@ -89,7 +89,6 @@ public class EnsambladorDominio {
         // 4. HANDSHAKE (REGISTRO) AUTOMÁTICO
 
         String dominioId = "DOMINIO_SERVER"; 
-        // Usamos "127.0.0.1" o la IP local donde esté corriendo el dominio
         initEmitter.emitirRegistroDominioEvent(dominioId, "127.0.0.1", puertoEscuchaDominio);
         System.out.println("EnsambladorDominio: Solicitud de registro enviada al Broker.");
     }

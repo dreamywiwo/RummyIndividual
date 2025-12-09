@@ -26,4 +26,6 @@ public interface IProducerJugador {
     public void devolverFicha(String grupoId, String fichaId);
 
     public void configurarPartida(int maxNumFichas, int cantidadComodines);
+
+    public void solicitarEstadoJuego(String idJugadorLocal);
 }

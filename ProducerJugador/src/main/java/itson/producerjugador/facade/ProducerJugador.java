@@ -4,10 +4,12 @@
  */
 package itson.producerjugador.facade;
 
+import com.mycompany.conexioninterfaces.IDispatcher;
 import itson.producerjugador.emitters.ConfigurarPartidaEmitter;
 import itson.producerjugador.emitters.InicializarJuegoEmitter;
 import itson.producerjugador.emitters.JugarTurnoEmitter;
 import itson.rummydtos.FichaDTO;
+import itson.serializer.implementacion.JsonSerializer;
 import java.util.List;
 
 /**
@@ -20,10 +22,10 @@ public class ProducerJugador implements IProducerJugador {
     private final InicializarJuegoEmitter inicializarJuegoEmitter;
     private final ConfigurarPartidaEmitter configurarPartidaEmitter;
 
-    public ProducerJugador(JugarTurnoEmitter jugarTurnoEmitter, InicializarJuegoEmitter inicializarJuegoEmitter, ConfigurarPartidaEmitter configurarPartidaEmitter, String jugadorId) {
-        this.jugarTurnoEmitter = jugarTurnoEmitter;
-        this.inicializarJuegoEmitter = inicializarJuegoEmitter;
-        this.configurarPartidaEmitter = configurarPartidaEmitter;
+    public ProducerJugador(JsonSerializer jsonSerializer, IDispatcher dispatcher, String brokerIp, int brokerPort, String jugadorId) {
+        this.jugarTurnoEmitter = new JugarTurnoEmitter(jsonSerializer, dispatcher, brokerIp, brokerPort);
+        this.inicializarJuegoEmitter = new InicializarJuegoEmitter(jsonSerializer, dispatcher, brokerIp, brokerPort);
+        this.configurarPartidaEmitter = new ConfigurarPartidaEmitter(jsonSerializer, dispatcher, brokerIp, brokerPort);
     }
 
     @Override
@@ -59,6 +61,11 @@ public class ProducerJugador implements IProducerJugador {
     @Override
     public void configurarPartida(int maxNumFichas, int cantidadComodines) {
         configurarPartidaEmitter.emitirPartidaConfiguradaEvent(maxNumFichas, cantidadComodines);
+    }
+
+    @Override
+    public void solicitarEstadoJuego(String idJugadorLocal) {
+        jugarTurnoEmitter.emitirEstadoSolicitadoEvent(idJugadorLocal);
     }
 
 }

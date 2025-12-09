@@ -3,11 +3,13 @@
  */
 package itson.producerdominio.facade;
 
+import com.mycompany.conexioninterfaces.IDispatcher;
 import itson.producerdominio.emitters.EstadoJuegoEmitter;
 import itson.producerdominio.emitters.InicializarJuegoEmitter;
 import itson.rummydtos.FichaDTO;
 import itson.rummydtos.JugadorDTO;
 import itson.rummydtos.TableroDTO;
+import itson.serializer.implementacion.JsonSerializer;
 import java.util.List;
 
 /**
@@ -16,12 +18,12 @@ import java.util.List;
  */
 public class ProducerDominio implements IProducerDominio {
 
-    EstadoJuegoEmitter estadoJuegoEmitter;
-    InicializarJuegoEmitter inicializarJuegoEmitter;
+    private final InicializarJuegoEmitter inicializarJuegoEmitter;
+    private final EstadoJuegoEmitter estadoJuegoEmitter;
 
-    public ProducerDominio(EstadoJuegoEmitter estadoJuegoEmitter, InicializarJuegoEmitter inicializarJuegoEmitter) {
-        this.estadoJuegoEmitter = estadoJuegoEmitter;
-        this.inicializarJuegoEmitter = inicializarJuegoEmitter;
+    public ProducerDominio (JsonSerializer jsonSerializer, IDispatcher dispatcher, String brokerIp, int brokerPort) {
+        this.inicializarJuegoEmitter = new InicializarJuegoEmitter(jsonSerializer, dispatcher, brokerIp, brokerPort);
+        this.estadoJuegoEmitter = new EstadoJuegoEmitter(jsonSerializer, dispatcher, brokerIp, brokerPort);
     }
 
     @Override
@@ -67,6 +69,11 @@ public class ProducerDominio implements IProducerDominio {
     @Override
     public void registrarDominio(String miId, String ipCliente, int miPuertoDeEscucha) {
         inicializarJuegoEmitter.emitirRegistroDominioEvent(miId, ipCliente, miPuertoDeEscucha);
+    }
+
+    @Override
+    public void enviarPartidaCreada() {
+        estadoJuegoEmitter.emitirPartidaCreadaEvent();
     }
 
 }

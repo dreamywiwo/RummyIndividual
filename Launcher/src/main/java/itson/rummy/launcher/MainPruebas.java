@@ -8,7 +8,6 @@ import ensambladores.EnsambladorCliente;
 import ensambladores.EnsambladorDominio;
 import ensambladores.EnsambladorServidor;
 import itson.dominiorummy.entidades.Jugador;
-// Ya no importamos UI_TurnoJugador porque el Main no la toca directamente
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.SwingUtilities;
@@ -24,7 +23,10 @@ public class MainPruebas {
     private static final int PUERTO_JUGADOR_2 = 9002;
 
     public static void main(String[] args) {
-
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            System.out.println("Cerrando aplicación y liberando puertos...");
+        }));
+        
         // 1. Iniciar Broker
         new Thread(() -> {
             try {
@@ -38,37 +40,34 @@ public class MainPruebas {
 
         esperar(1000);
 
-        // 2. Crear Jugadores 
+        // 2. Crear Jugadores y guardar referencias para obtener sus ids
         List<Jugador> listaJugadores = new ArrayList<>();
-        Jugador jugador1 = new Jugador("Jugador1"); 
+
+        // Al hacer new Jugador("Nombre"), internamente se genera un UUID. 
+        Jugador jugador1 = new Jugador("Jugador1");
         Jugador jugador2 = new Jugador("Jugador2");
-        
+
         listaJugadores.add(jugador1);
         listaJugadores.add(jugador2);
 
         System.out.println("[DOMINIO] IDs Generados -> J1: " + jugador1.getId() + " | J2: " + jugador2.getId());
 
-        // 3. Iniciar Dominio (Server)
-        System.out.println("[DOMINIO] Configurando lógica del servidor...");
+        // 3. Iniciar Dominio
+        System.out.println("[DOMINIO] Conectando al Broker y configurando juego...");
         EnsambladorDominio ensambladorDominio = new EnsambladorDominio();
         try {
-            // Esto prepara el juego mockeado en el servidor
             ensambladorDominio.iniciarJuego(IP_LOCALHOST, PUERTO_BROKER, PUERTO_DOMINIO, listaJugadores);
         } catch (Exception e) {
             System.err.println("Error al configurar el Dominio: " + e.getMessage());
         }
 
-        // 4. Lanzar Clientes
+        // 4. Lanzar Clientes USANDO LOS UUID
         lanzarCliente(jugador1.getId(), PUERTO_JUGADOR_1);
         lanzarCliente(jugador2.getId(), PUERTO_JUGADOR_2);
-        
+
         esperar(3000);
 
-        // 5. Arrancar el juego en el servidor
-        // Nota: Como los clientes inician en el Menú, el Proxy (Listener) estará en "Modo Configuración".
-        // Los eventos que mande el dominio ahora (como "Turno Iniciado") serán ignorados por el cliente
-        // hasta que el usuario navegue a la pantalla de juego.
-        System.out.println("[MAIN] Clientes en Menú. Iniciando lógica de partida en background...");
+        System.out.println("[MAIN] Clientes listos. Indicando al Dominio que comience la partida...");
         ensambladorDominio.comenzarPartida();
     }
 
@@ -77,11 +76,11 @@ public class MainPruebas {
             EnsambladorCliente ensamblador = new EnsambladorCliente();
 
             ensamblador.iniciarAplicacion(
-                    IP_LOCALHOST,   // IP Broker
-                    PUERTO_BROKER,  // Puerto Broker
-                    IP_LOCALHOST,   // Mi IP
-                    puertoEscucha,  // Mi Puerto
-                    id              // Mi ID
+                    IP_LOCALHOST, // IP Broker
+                    PUERTO_BROKER, // Puerto Broker
+                    IP_LOCALHOST, // Mi IP
+                    puertoEscucha, // Mi Puerto
+                    id // Mi ID
             );
         });
     }

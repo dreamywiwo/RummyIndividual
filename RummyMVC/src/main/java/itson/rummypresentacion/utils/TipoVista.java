@@ -11,5 +11,7 @@ package itson.rummypresentacion.utils;
 public enum TipoVista {
     MENU_PRINCIPAL,
     CONFIGURAR_PARTIDA,
-    TABLERO_JUEGO
+    TABLERO_JUEGO,
+    REGISTRAR_JUGADOR,
+    SALA
 }

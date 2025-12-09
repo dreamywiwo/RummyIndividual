@@ -45,6 +45,7 @@ public class UI_MenuRummy extends javax.swing.JFrame implements IObserverConfigu
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jButtonCrearPartida.setBackground(new java.awt.Color(248, 222, 222));
+        jButtonCrearPartida.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
         jButtonCrearPartida.setForeground(new java.awt.Color(74, 68, 89));
         jButtonCrearPartida.setText("CREAR PARTIDA");
         jButtonCrearPartida.setBorder(null);
@@ -60,11 +61,17 @@ public class UI_MenuRummy extends javax.swing.JFrame implements IObserverConfigu
         getContentPane().add(jButtonCrearPartida, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 440, -1, -1));
 
         jButtonUnirsePartida.setBackground(new java.awt.Color(248, 222, 222));
+        jButtonUnirsePartida.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
         jButtonUnirsePartida.setForeground(new java.awt.Color(74, 68, 89));
         jButtonUnirsePartida.setText("UNIRSE A PARTIDA");
         jButtonUnirsePartida.setBorder(null);
         jButtonUnirsePartida.setBorderPainted(false);
         jButtonUnirsePartida.setPreferredSize(new java.awt.Dimension(340, 61));
+        jButtonUnirsePartida.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonUnirsePartidaActionPerformed(evt);
+            }
+        });
         getContentPane().add(jButtonUnirsePartida, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 510, -1, -1));
 
         jLabelFondo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/menuRummy.png"))); // NOI18N
@@ -78,6 +85,12 @@ public class UI_MenuRummy extends javax.swing.JFrame implements IObserverConfigu
             controlador.irAConfigurarPartida();
         }
     }//GEN-LAST:event_jButtonCrearPartidaActionPerformed
+
+    private void jButtonUnirsePartidaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonUnirsePartidaActionPerformed
+        if (controlador != null) {
+            controlador.unirseAPartida();
+        }
+    }//GEN-LAST:event_jButtonUnirsePartidaActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

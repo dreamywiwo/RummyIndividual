@@ -34,6 +34,7 @@ private ModeloEjercerTurno modelo;
 
         // 2. CAMBIAR LA VISTA
         modelo.cambiarVista(TipoVista.TABLERO_JUEGO);
+        modelo.solicitarSincronizacion();
     }
 
     /**

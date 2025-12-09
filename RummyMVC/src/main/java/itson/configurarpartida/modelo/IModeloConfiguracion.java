@@ -11,6 +11,7 @@ import itson.rummypresentacion.utils.TipoVista;
  * @author Dana Chavez
  */
 public interface IModeloConfiguracion {
-    TipoVista getVistaActual();
-    String getMensajeError();
+    public abstract TipoVista getVistaActual();
+    public abstract String getMensajeError();
+    public abstract boolean isConfiguracionExitosa();
 }

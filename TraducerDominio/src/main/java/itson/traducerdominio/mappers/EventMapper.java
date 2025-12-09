@@ -5,6 +5,7 @@
 package itson.traducerdominio.mappers;
 
 import itson.dominiorummy.facade.IDominio;
+import itson.rummyeventos.acciones.EstadoSolicitadoEvent;
 import itson.rummyeventos.acciones.FichaDevueltaEvent;
 import itson.rummyeventos.acciones.FichaTomadaEvent;
 import itson.rummyeventos.acciones.GrupoActualizadoEvent;
@@ -40,6 +41,7 @@ public class EventMapper {
         register("termino.turno", this::handleTerminoTurno);
         register("ficha.devuelta", this::handleFichaDevuelta);
         register("partida.configurada", this::handlePartidaConfigurada);
+        register("estado.solicitado", this::handleEstadoSolicitado);
     }
     
     public void register(String eventType, BiConsumer<String, ISerializer> handler) {
@@ -110,6 +112,15 @@ public class EventMapper {
         try {
             PartidaConfiguradaEvent event = serializer.deserialize(rawPayload, PartidaConfiguradaEvent.class);
             dominio.configurarPartida(event.getMaxNumFichas(), event.getCantidadComodines());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
+    private void handleEstadoSolicitado(String rawPayload, ISerializer serializer){
+        try {
+            EstadoSolicitadoEvent event = serializer.deserialize(rawPayload, EstadoSolicitadoEvent.class);
+            dominio.procesarSolicitudEstado(event.getJugadorId());
         } catch (Exception e) {
             e.printStackTrace();
         }

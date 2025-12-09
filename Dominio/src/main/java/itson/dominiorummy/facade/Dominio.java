@@ -25,7 +25,7 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 public class Dominio implements IDominio {
-    
+
     private final Tablero tablero;
     private final IProducerDominio producer;
     private final Turno turno;
@@ -67,13 +67,43 @@ public class Dominio implements IDominio {
             this.partida.configurar(maxNumFichas, cantidadComodines);
             this.partida.marcarDisponible();
 
-            // CONFIRMACIÓN (Opcional, para avisar a la UI que cambie de pantalla)
-            // producer.partidaConfiguradaExitosamente(); 
+            producer.enviarPartidaCreada();
+
             System.out.println("[DOMINIO] Partida creada y en estado: " + this.partida.getEstado());
 
         } catch (Exception e) {
-            this.partida = null; 
+            this.partida = null;
             producer.mostrarError("Servidor", "Error interno al crear la partida: " + e.getMessage());
+        }
+    }
+
+    public void procesarSolicitudEstado(String jugadorId) {
+        System.out.println("[DOMINIO] Cliente listo. Enviando estado a: " + jugadorId);
+
+        // 1. Obtener al jugador usando el nuevo método
+        Jugador j = getJugadorById(jugadorId);
+
+        if (j != null) {
+            // Re-enviar Mano de ese jugador
+            producer.actualizarManoJugador(
+                    jugadorId,
+                    FichaMapper.toDTO(j.getMano().getFichas())
+            );
+            System.out.println("   -> Mano reenviada (" + j.getMano().getFichas().size() + " fichas)");
+        } else {
+            System.err.println("   -> Error: Jugador no encontrado con ID: " + jugadorId);
+        }
+
+        // 2. Re-enviar Tablero (Estado Global)
+        producer.actualizarTablero(TableroMapper.toDTO(tablero));
+
+        // 3. Re-enviar Sopa (Estado Global)
+        producer.actualizarSopa(sopa.getFichasRestantes());
+
+        // 4. Re-enviar Turno Actual
+        Jugador turnoActual = turno.getJugadorActual();
+        if (turnoActual != null) {
+            producer.actualizarTurno(turnoActual.getId());
         }
     }
 
@@ -83,7 +113,7 @@ public class Dominio implements IDominio {
 
     private boolean validarParametrosConfiguracion(int fichas, int comodines) {
         if (fichas < 10 || fichas > 13) {
-            return false; 
+            return false;
         }
         if (comodines < 2 || comodines > 8) {
             return false;
@@ -317,6 +347,17 @@ public class Dominio implements IDominio {
         jugadores.put(jugador.getId(), jugador);
     }
 
+    public Jugador getJugadorById(String id) {
+        if (this.jugadores != null) {
+            for (Jugador j : this.jugadores.values()) { 
+                if (j.getId().equals(id)) {
+                    return jugadores.get(id);
+                }
+            }
+        }
+        return null; 
+    }
+
     // TERMINAR TURNO (Público)
     @Override
     public void terminarTurno() {
@@ -419,7 +460,19 @@ public class Dominio implements IDominio {
             guardarBackupInicioTurno();
 
             producer.actualizarTablero(TableroMapper.toDTO(tablero));
+            
+            producer.actualizarManoJugador(
+                jugadorId, 
+                FichaMapper.toDTO(jugadorActual.getMano().getFichas())
+            );
+
+            producer.actualizarManoJugador(
+                siguienteJugador.getId(), 
+                FichaMapper.toDTO(siguienteJugador.getMano().getFichas())
+            );
+            
             producer.actualizarTurno(siguienteJugador.getId());
+            
 
         } catch (Exception e) {
             LOG.severe("Error al terminar turno: " + e.getMessage());
